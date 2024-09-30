@@ -3,18 +3,17 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
-rawdata = csv.reader(open('./dataset/test.csv', 'r'))
+rawdata = csv.reader(open('./dataset/train.csv', 'r'))
 title = next(rawdata)
 rawdata = list(rawdata)
 
 #%%
-
 def getslice(head:str):
   member = [i for i, item in enumerate(title) if item.startswith(head)]
   return slice(member[0], member[-1]+1)
 
 singlecolumns = ['id', 'p_num', 'time']
-datacolumns = ['bg', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity']
+datacolumns = ['bg-', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity', 'bg+']
 columns = singlecolumns + datacolumns
 
 dataslices = { col: getslice(col) for col in columns}
@@ -42,9 +41,11 @@ class Dataset:
 
   def __getattribute__(self, name: str):
     if name in ['data', 'table']: return super().__getattribute__(name)
+    if name == 'bg': return self.data['bg-']
+    if name == 'label': return self.data['bg+']
     return self.data[name]
   
-  __slots__ = ['data', 'bg', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity', 'activities']
+  __slots__ = ['data', 'bg', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity', 'activities', 'label']
 
   def __getitem__(self, idx):
     if isinstance(idx, str):
@@ -65,8 +66,9 @@ if __name__ == '__main__':
   train_data = Dataset(data)
 
   assert train_data.bg.shape == train_data.carbs.shape
-
   train_data.table()
 
   batch = train_data[0:10]
   print(batch)
+
+# %%
