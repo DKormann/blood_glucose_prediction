@@ -70,5 +70,3 @@ if __name__ == '__main__':
 
   batch = train_data[0:10]
   print(batch)
-
-# %%
