@@ -13,7 +13,7 @@ def getslice(head:str):
   return slice(member[0], member[-1]+1)
 
 singlecolumns = ['id', 'p_num', 'time']
-datacolumns = ['bg-', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity', 'bg+']
+datacolumns = ['bg-', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity', 'bg+1']
 columns = singlecolumns + datacolumns
 
 dataslices = { col: getslice(col) for col in columns}
@@ -42,25 +42,25 @@ class Dataset:
   def __getattribute__(self, name: str):
     if name in ['data', 'table']: return super().__getattribute__(name)
     if name == 'bg': return self.data['bg-']
-    if name == 'label': return self.data['bg+']
+    if name == 'label': return self.data['bg+1']
     return self.data[name]
   
   __slots__ = ['data', 'bg', 'insulin', 'carbs', 'hr', 'steps', 'cals', 'activity', 'activities', 'label']
 
   def __getitem__(self, idx):
-    if isinstance(idx, str):
-      return self.data[idx]
+    if isinstance(idx, str): return self.data[idx]
     return Dataset({col: self.data[col][idx] for col in self.data})
   
-  def __repr__(self):
-    return f'Dataset({len(self.bg)} samples)'
+  def __repr__(self): return f'Dataset({len(self.bg)} samples)'
 
   def table(self):
     print(f'{self}:')
     for key in ['p_num', 'time']: print(f'{key}: {self.data[key][0]}')
     for key in datacolumns: print(f'{key}: {self.data[key][0][:10]}')
     print()
-  
+
+
+#%%
 
 if __name__ == '__main__':
   train_data = Dataset(data)
