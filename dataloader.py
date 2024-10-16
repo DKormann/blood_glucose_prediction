@@ -36,11 +36,10 @@ data['time'] = np.array([time2int(dataline[dataslices['time']][0]) for dataline 
 #%%
 class Dataset:
 
-  def __init__(self, data):
-    self.data = data
+  def __init__(self, data): self.data = data
 
   def __getattribute__(self, name: str):
-    if name in ['data', 'table']: return super().__getattribute__(name)
+    if name in ['data', 'table', '__class__']: return super().__getattribute__(name)
     if name == 'bg': return self.data['bg-']
     if name == 'label': return self.data['bg+1']
     return self.data[name]
@@ -59,14 +58,11 @@ class Dataset:
     for key in datacolumns: print(f'{key}: {self.data[key][0][:10]}')
     print()
 
-
 #%%
+full_data = lambda: Dataset(data)
+train_data = full_data()
 
-if __name__ == '__main__':
-  train_data = Dataset(data)
+def plot(data:np.ndarray):
+  x = np.arange(len(data))
+  plt.scatter(x,data)
 
-  assert train_data.bg.shape == train_data.carbs.shape
-  train_data.table()
-
-  batch = train_data[0:10]
-  print(batch)
